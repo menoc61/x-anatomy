@@ -6,8 +6,8 @@ import { prisma } from "@/lib/db"
 import { getAuthSession } from "@/lib/auth"
 
 const postSchema = z.object({
-  text: z.string().min(1),
-  postId: z.string().min(1),
+  content: z.string().min(1, "Comment text is required"),
+  postId: z.coerce.number().int().positive("Post ID is required"),
 })
 
 export async function GET(req: NextRequest) {
@@ -16,16 +16,18 @@ export async function GET(req: NextRequest) {
     const postId = url.searchParams.get("postId")
 
     if (!postId) {
-      return new NextResponse("Missing postId", { status: 400 })
+      return NextResponse.json(
+        { error: "Missing postId parameter" },
+        { status: 400 }
+      );
     }
 
     const comments = await prisma.comment.findMany({
       where: {
-        postId,
+        postId: parseInt(postId),
       },
       include: {
         author: true,
-        votes: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -34,7 +36,11 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(comments)
   } catch (error) {
-    return new NextResponse("Something went wrong", { status: 500 })
+    console.error("[GET /api/comments]", error);
+    return NextResponse.json(
+      { error: "Failed to fetch comments" },
+      { status: 500 }
+    );
   }
 }
 
@@ -43,28 +49,52 @@ export async function POST(req: NextRequest) {
     const session = await getAuthSession()
 
     if (!session?.user) {
-      return new NextResponse("Unauthorized", { status: 401 })
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
     }
 
     const body = await req.json()
 
-    const { text, postId } = postSchema.parse(body)
+    const { content, postId } = postSchema.parse(body)
+
+    // Get the user from the database to ensure we have the ID
+    const user = await prisma.user.findUnique({
+      where: {
+        email: session.user.email as string,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      );
+    }
 
     const comment = await prisma.comment.create({
       data: {
-        text,
+        content,
         postId,
-        authorId: session.user.id,
+        authorId: user.id,
       },
     })
 
     return NextResponse.json(comment)
   } catch (error) {
+    console.error("[POST /api/comments]", error);
+    
     if (error instanceof z.ZodError) {
-      return new NextResponse("Invalid request", { status: 400 })
+      return NextResponse.json(
+        { error: "Invalid request data", details: error.errors },
+        { status: 400 }
+      );
     }
 
-    return new NextResponse("Something went wrong", { status: 500 })
+    return NextResponse.json(
+      { error: "Failed to create comment" },
+      { status: 500 }
+    );
   }
 }
-

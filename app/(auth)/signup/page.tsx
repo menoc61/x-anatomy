@@ -96,6 +96,7 @@ export default function SignupPage() {
                 onChange={(e) => setName(e.target.value)}
                 disabled={isLoading}
                 required
+                className="h-12 pl-10 pr-4 rounded-lg border-muted-foreground/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
               />
             </div>
             <div className="space-y-2">
@@ -108,6 +109,7 @@ export default function SignupPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
                 required
+                className="h-12 pl-10 pr-4 rounded-lg border-muted-foreground/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
               />
             </div>
             <div className="space-y-2">
@@ -117,44 +119,45 @@ export default function SignupPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirm-password">Confirm Password</Label>
-              <Input
-                id="confirm-password"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                disabled={isLoading}
-                required
-              />
-            </div>
-            {error && <div className="text-sm text-red-500">{error}</div>}
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating account...
-                </>
-              ) : (
-                "Create account"
-              )}
-            </Button>
-            <div className="text-center text-sm">
-              Already have an account?{" "}
-              <Link href="/login" className="underline">
-                Log in
-              </Link>
-            </div>
-          </CardFooter>
-        </form>
-      </Card>
+          disabled={isLoading}
+          required
+          className="h-12 pl-10 pr-4 rounded-lg border-muted-foreground/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="confirm-password">Confirm Password</Label>
+        <Input
+          id="confirm-password"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          disabled={isLoading}
+          required
+          className="h-12 pl-10 pr-4 rounded-lg border-muted-foreground/20 focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
+        />
+      </div>
+      {error && <div className="text-sm text-red-500">{error}</div>}
+    </CardContent>
+    <CardFooter className="flex flex-col space-y-4">
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Creating account...
+          </>
+        ) : (
+          "Create account"
+        )}
+      </Button>
+      <div className="text-center text-sm">
+        Already have an account?{" "}
+        <Link href="/login" className="underline">
+          Log in
+        </Link>
+      </div>
+    </CardFooter>
+  </form>
+</Card>
     </div>
   )
 }
-
