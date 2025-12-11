@@ -3,6 +3,7 @@ export interface User {
   name: string
   email: string
   role: "admin" | "user"
+  bio: string
   subscription?: Subscription
   createdAt: string
   updatedAt: string
