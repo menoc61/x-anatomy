@@ -5,12 +5,14 @@ const nextConfig = {
   },
   typescript: {
     ignoreBuildErrors: true,
+    // ✅ Use environment variable safely in ESM
+    typeCheck: typeof process !== 'undefined' && !process.env.SKIP_TYPES,
   },
   images: {
     unoptimized: true,
   },
 
-  // ✔ Migrate to next js 16
+  // ✔ Turbopack (Next.js 15+)
   turbopack: {},
 
   experimental: {
@@ -41,3 +43,5 @@ const nextConfig = {
     ];
   },
 };
+
+export default nextConfig;

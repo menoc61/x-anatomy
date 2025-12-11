@@ -61,25 +61,33 @@ self.addEventListener("fetch", (event) => {
   }
 
   // For HTML requests, try the network first, fall back to cache, finally the offline page
-  if (event.request.headers.get("Accept")?.includes("text/html")) {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          // Cache the response
-          const responseClone = response.clone()
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone)
-          })
-          return response
-        })
-        .catch(() => {
-          return caches.match(event.request).then((response) => {
-            return response || caches.match(OFFLINE_URL)
-          })
-        }),
-    )
-    return
-  }
+if (event.request.headers.get("Accept")?.includes("text/html")) {
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseClone);
+        });
+        return response; // ALWAYS Response
+      })
+      .catch(async () => {
+        const cached = await caches.match(event.request);
+        if (cached) return cached; // Response
+
+        const offlineFallback = await caches.match(OFFLINE_URL);
+        if (offlineFallback) return offlineFallback; // Response
+
+        // Last resort: return a dummy Response
+        return new Response("Offline", {
+          headers: { "Content-Type": "text/html" },
+          status: 200,
+        });
+      })
+  );
+  return;
+}
+
 
   // For non-HTML requests, try the cache first, fall back to the network
   event.respondWith(

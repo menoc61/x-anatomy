@@ -3,7 +3,8 @@
 import type React from "react"
 
 interface ChartTooltipProps {
-  data: any
+  data: Record<string, string | number | boolean | null | undefined>
+
 }
 
 const ChartTooltip: React.FC<ChartTooltipProps> = ({ data }) => {

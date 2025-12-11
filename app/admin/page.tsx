@@ -1,8 +1,15 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   BarChart,
   Bar,
@@ -27,8 +34,8 @@ import {
   PolarAngleAxis,
   PolarRadiusAxis,
   Radar,
-} from "recharts"
-import type { Dashboard } from "@/types"
+} from "recharts";
+import type { Dashboard } from "@/types";
 import {
   Users,
   Video,
@@ -46,21 +53,27 @@ import {
   BarChart2,
   HardDrive,
   Mail,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import Link from "next/link"
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import Link from "next/link";
 
 export default function AdminDashboardPage() {
-  const [dashboardData, setDashboardData] = useState<Dashboard | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [timeRange, setTimeRange] = useState("30days")
+  const [dashboardData, setDashboardData] = useState<Dashboard | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [timeRange, setTimeRange] = useState("30days");
 
   useEffect(() => {
     // In a real app, this would be an API call
     const fetchDashboardData = async () => {
       // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Mock dashboard data
       const mockData: Dashboard = {
@@ -73,26 +86,75 @@ export default function AdminDashboardPage() {
             name: "John Doe",
             email: "john@example.com",
             role: "user",
-            createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-            updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+            createdAt: new Date(
+              Date.now() - 2 * 24 * 60 * 60 * 1000
+            ).toISOString(),
+            updatedAt: new Date(
+              Date.now() - 2 * 24 * 60 * 60 * 1000
+            ).toISOString(),
+            subscription: {
+              id: "sub-1",
+              status: "active",
+              plan: "basic",
+              startDate: new Date(
+                Date.now() - 2 * 24 * 60 * 60 * 1000
+              ).toISOString(),
+              expiresAt: new Date(
+                Date.now() + 12 * 24 * 60 * 60 * 1000
+              ).toISOString(), // 12 days left
+              autoRenew: true,
+            },
           },
           {
             id: "user-2",
             name: "Jane Smith",
             email: "jane@example.com",
             role: "user",
-            createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-            updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+            createdAt: new Date(
+              Date.now() - 3 * 24 * 60 * 60 * 1000
+            ).toISOString(),
+            updatedAt: new Date(
+              Date.now() - 3 * 24 * 60 * 60 * 1000
+            ).toISOString(),
+            subscription: {
+              id: "sub-2",
+              status: "trial",
+              plan: "premium",
+              startDate: new Date(
+                Date.now() - 3 * 24 * 60 * 60 * 1000
+              ).toISOString(),
+              expiresAt: new Date(
+                Date.now() + 11 * 24 * 60 * 60 * 1000
+              ).toISOString(), // trial still active
+              autoRenew: false,
+            },
           },
           {
             id: "user-3",
             name: "Bob Johnson",
             email: "bob@example.com",
             role: "user",
-            createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-            updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+            createdAt: new Date(
+              Date.now() - 5 * 24 * 60 * 60 * 1000
+            ).toISOString(),
+            updatedAt: new Date(
+              Date.now() - 5 * 24 * 60 * 60 * 1000
+            ).toISOString(),
+            subscription: {
+              id: "sub-3",
+              status: "inactive",
+              plan: "professional",
+              startDate: new Date(
+                Date.now() - 40 * 24 * 60 * 60 * 1000
+              ).toISOString(), // 40 days ago
+              expiresAt: new Date(
+                Date.now() - 10 * 24 * 60 * 60 * 1000
+              ).toISOString(), // expired
+              autoRenew: false,
+            },
           },
         ],
+
         popularMuscles: [
           { id: "biceps", name: "Biceps Brachii", views: 1245 },
           { id: "quadriceps", name: "Quadriceps", views: 1120 },
@@ -110,25 +172,28 @@ export default function AdminDashboardPage() {
           flagged: 23,
           pending: 12,
         },
-      }
+      };
 
-      setDashboardData(mockData)
-      setIsLoading(false)
-    }
+      setDashboardData(mockData);
+      setIsLoading(false);
+    };
 
-    fetchDashboardData()
-  }, [])
+    fetchDashboardData();
+  }, []);
 
   // Prepare data for charts
   const subscriptionData = dashboardData
     ? [
         { name: "Basic", value: dashboardData.subscriptionStats.basic },
         { name: "Premium", value: dashboardData.subscriptionStats.premium },
-        { name: "Professional", value: dashboardData.subscriptionStats.professional },
+        {
+          name: "Professional",
+          value: dashboardData.subscriptionStats.professional,
+        },
       ]
-    : []
+    : [];
 
-  const muscleViewsData = dashboardData?.popularMuscles || []
+  const muscleViewsData = dashboardData?.popularMuscles || [];
 
   // Mock data for analytics charts
   const userGrowthData = [
@@ -141,7 +206,7 @@ export default function AdminDashboardPage() {
     { name: "Jul", users: 1150 },
     { name: "Aug", users: 1200 },
     { name: "Sep", users: 1248 },
-  ]
+  ];
 
   const revenueData = [
     { name: "Jan", revenue: 15000 },
@@ -153,7 +218,7 @@ export default function AdminDashboardPage() {
     { name: "Jul", revenue: 23000 },
     { name: "Aug", revenue: 23500 },
     { name: "Sep", revenue: 24389 },
-  ]
+  ];
 
   const engagementData = [
     { name: "Jan", views: 12500, sessions: 8500 },
@@ -165,24 +230,44 @@ export default function AdminDashboardPage() {
     { name: "Jul", views: 15500, sessions: 11500 },
     { name: "Aug", views: 16000, sessions: 12000 },
     { name: "Sep", views: 16500, sessions: 12500 },
-  ]
+  ];
 
   // Mock data for reports
   const deviceUsageData = [
     { name: "Desktop", value: 45 },
     { name: "Mobile", value: 40 },
     { name: "Tablet", value: 15 },
-  ]
+  ];
 
   // Mock data for user engagement scatter plot
   const userEngagementData = [
-    { timeSpent: 15, actionsPerSession: 12, sessions: 50, name: "Casual Users" },
-    { timeSpent: 25, actionsPerSession: 20, sessions: 80, name: "Regular Users" },
-    { timeSpent: 40, actionsPerSession: 35, sessions: 120, name: "Power Users" },
+    {
+      timeSpent: 15,
+      actionsPerSession: 12,
+      sessions: 50,
+      name: "Casual Users",
+    },
+    {
+      timeSpent: 25,
+      actionsPerSession: 20,
+      sessions: 80,
+      name: "Regular Users",
+    },
+    {
+      timeSpent: 40,
+      actionsPerSession: 35,
+      sessions: 120,
+      name: "Power Users",
+    },
     { timeSpent: 60, actionsPerSession: 50, sessions: 30, name: "Educators" },
     { timeSpent: 35, actionsPerSession: 30, sessions: 90, name: "Students" },
-    { timeSpent: 45, actionsPerSession: 40, sessions: 70, name: "Healthcare Pros" },
-  ]
+    {
+      timeSpent: 45,
+      actionsPerSession: 40,
+      sessions: 70,
+      name: "Healthcare Pros",
+    },
+  ];
 
   // Mock data for feature usage radar chart
   const featureUsageData = [
@@ -222,7 +307,7 @@ export default function AdminDashboardPage() {
       B: 85,
       fullMark: 150,
     },
-  ]
+  ];
 
   // Mock data for comment trends
   const commentTrendsData = [
@@ -235,16 +320,18 @@ export default function AdminDashboardPage() {
     { name: "Jul", comments: 230, flagged: 18 },
     { name: "Aug", comments: 245, flagged: 20 },
     { name: "Sep", comments: 260, flagged: 23 },
-  ]
+  ];
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"]
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">Overview of your anatomy explorer platform</p>
+          <p className="text-muted-foreground">
+            Overview of your anatomy explorer platform
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Select value={timeRange} onValueChange={setTimeRange}>
@@ -269,19 +356,27 @@ export default function AdminDashboardPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{isLoading ? "..." : dashboardData?.totalUsers.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">+12% from last month</p>
+            <div className="text-2xl font-bold">
+              {isLoading ? "..." : dashboardData?.totalUsers.toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              +12% from last month
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Subscriptions</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Active Subscriptions
+            </CardTitle>
             <Crown className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {isLoading ? "..." : dashboardData?.activeSubscriptions.toLocaleString()}
+              {isLoading
+                ? "..."
+                : dashboardData?.activeSubscriptions.toLocaleString()}
             </div>
             <p className="text-xs text-muted-foreground">+8% from last month</p>
           </CardContent>
@@ -293,19 +388,27 @@ export default function AdminDashboardPage() {
             <Video className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{isLoading ? "..." : dashboardData?.totalVideos.toLocaleString()}</div>
+            <div className="text-2xl font-bold">
+              {isLoading ? "..." : dashboardData?.totalVideos.toLocaleString()}
+            </div>
             <p className="text-xs text-muted-foreground">+4 added this week</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Monthly Revenue
+            </CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{isLoading ? "..." : "$24,389"}</div>
-            <p className="text-xs text-muted-foreground">+18% from last month</p>
+            <div className="text-2xl font-bold">
+              {isLoading ? "..." : "$24,389"}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              +18% from last month
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -324,7 +427,9 @@ export default function AdminDashboardPage() {
             <Card className="col-span-4">
               <CardHeader>
                 <CardTitle>Popular Muscles</CardTitle>
-                <CardDescription>Most viewed muscle groups in the last 30 days</CardDescription>
+                <CardDescription>
+                  Most viewed muscle groups in the last 30 days
+                </CardDescription>
               </CardHeader>
               <CardContent className="pl-2">
                 <div className="h-[300px]">
@@ -354,7 +459,9 @@ export default function AdminDashboardPage() {
             <Card className="col-span-3">
               <CardHeader>
                 <CardTitle>Subscription Distribution</CardTitle>
-                <CardDescription>Breakdown of active subscriptions by plan</CardDescription>
+                <CardDescription>
+                  Breakdown of active subscriptions by plan
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="h-[300px]">
@@ -366,13 +473,18 @@ export default function AdminDashboardPage() {
                           cx="50%"
                           cy="50%"
                           labelLine={false}
-                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                          label={({ name, percent }) =>
+                            `${name}: ${(percent * 100).toFixed(0)}%`
+                          }
                           outerRadius={80}
                           fill="#8884d8"
                           dataKey="value"
                         >
                           {subscriptionData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={COLORS[index % COLORS.length]}
+                            />
                           ))}
                         </Pie>
                         <RechartsTooltip />
@@ -401,7 +513,9 @@ export default function AdminDashboardPage() {
                         </div>
                         <div className="flex-1">
                           <p className="font-medium">{user.name}</p>
-                          <p className="text-sm text-muted-foreground">{user.email}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {user.email}
+                          </p>
                         </div>
                         <Button variant="outline" size="sm" asChild>
                           <Link href={`/admin/users?id=${user.id}`}>View</Link>
@@ -424,13 +538,19 @@ export default function AdminDashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-4">
-                  <Button className="h-auto py-4 flex flex-col items-center justify-center gap-2" asChild>
+                  <Button
+                    className="h-auto py-4 flex flex-col items-center justify-center gap-2"
+                    asChild
+                  >
                     <Link href="/admin/users/add">
                       <UserPlus className="h-5 w-5" />
                       <span>Add User</span>
                     </Link>
                   </Button>
-                  <Button className="h-auto py-4 flex flex-col items-center justify-center gap-2" asChild>
+                  <Button
+                    className="h-auto py-4 flex flex-col items-center justify-center gap-2"
+                    asChild
+                  >
                     <Link href="/admin/videos/upload">
                       <Upload className="h-5 w-5" />
                       <span>Upload Video</span>
@@ -476,14 +596,21 @@ export default function AdminDashboardPage() {
                       <XAxis dataKey="name" />
                       <YAxis />
                       <RechartsTooltip />
-                      <Line type="monotone" dataKey="users" stroke="#8884d8" activeDot={{ r: 8 }} />
+                      <Line
+                        type="monotone"
+                        dataKey="users"
+                        stroke="#8884d8"
+                        activeDot={{ r: 8 }}
+                      />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
               </CardContent>
               <CardFooter>
                 <Button variant="outline" size="sm" className="ml-auto" asChild>
-                  <Link href="/admin/predictions/users">Run Prediction Model</Link>
+                  <Link href="/admin/predictions/users">
+                    Run Prediction Model
+                  </Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -506,14 +633,22 @@ export default function AdminDashboardPage() {
                       <XAxis dataKey="name" />
                       <YAxis />
                       <RechartsTooltip />
-                      <Area type="monotone" dataKey="revenue" stroke="#00C49F" fill="#00C49F" fillOpacity={0.2} />
+                      <Area
+                        type="monotone"
+                        dataKey="revenue"
+                        stroke="#00C49F"
+                        fill="#00C49F"
+                        fillOpacity={0.2}
+                      />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
               </CardContent>
               <CardFooter>
                 <Button variant="outline" size="sm" className="ml-auto" asChild>
-                  <Link href="/admin/predictions/revenue">Run Prediction Model</Link>
+                  <Link href="/admin/predictions/revenue">
+                    Run Prediction Model
+                  </Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -524,7 +659,9 @@ export default function AdminDashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle>User Engagement</CardTitle>
-                  <CardDescription>Page views and session duration</CardDescription>
+                  <CardDescription>
+                    Page views and session duration
+                  </CardDescription>
                 </div>
                 <Activity className="h-4 w-4 text-muted-foreground" />
               </div>
@@ -560,7 +697,9 @@ export default function AdminDashboardPage() {
             </CardContent>
             <CardFooter>
               <Button variant="outline" size="sm" className="ml-auto" asChild>
-                <Link href="/admin/predictions/engagement">Run Prediction Model</Link>
+                <Link href="/admin/predictions/engagement">
+                  Run Prediction Model
+                </Link>
               </Button>
             </CardFooter>
           </Card>
@@ -571,7 +710,9 @@ export default function AdminDashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle>User Engagement Clusters</CardTitle>
-                    <CardDescription>Time spent vs. actions per session</CardDescription>
+                    <CardDescription>
+                      Time spent vs. actions per session
+                    </CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -587,19 +728,38 @@ export default function AdminDashboardPage() {
                       }}
                     >
                       <CartesianGrid />
-                      <XAxis type="number" dataKey="timeSpent" name="Time Spent (min)" />
-                      <YAxis type="number" dataKey="actionsPerSession" name="Actions" />
-                      <ZAxis type="number" dataKey="sessions" range={[50, 400]} name="Sessions" />
+                      <XAxis
+                        type="number"
+                        dataKey="timeSpent"
+                        name="Time Spent (min)"
+                      />
+                      <YAxis
+                        type="number"
+                        dataKey="actionsPerSession"
+                        name="Actions"
+                      />
+                      <ZAxis
+                        type="number"
+                        dataKey="sessions"
+                        range={[50, 400]}
+                        name="Sessions"
+                      />
                       <RechartsTooltip cursor={{ strokeDasharray: "3 3" }} />
                       <Legend />
-                      <Scatter name="User Segments" data={userEngagementData} fill="#8884d8" />
+                      <Scatter
+                        name="User Segments"
+                        data={userEngagementData}
+                        fill="#8884d8"
+                      />
                     </ScatterChart>
                   </ResponsiveContainer>
                 </div>
               </CardContent>
               <CardFooter>
                 <Button variant="outline" size="sm" className="ml-auto" asChild>
-                  <Link href="/admin/predictions/clusters">Run Clustering Algorithm</Link>
+                  <Link href="/admin/predictions/clusters">
+                    Run Clustering Algorithm
+                  </Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -609,19 +769,38 @@ export default function AdminDashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle>Feature Usage Comparison</CardTitle>
-                    <CardDescription>Current month vs. previous month</CardDescription>
+                    <CardDescription>
+                      Current month vs. previous month
+                    </CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={featureUsageData}>
+                    <RadarChart
+                      cx="50%"
+                      cy="50%"
+                      outerRadius="80%"
+                      data={featureUsageData}
+                    >
                       <PolarGrid />
                       <PolarAngleAxis dataKey="subject" />
                       <PolarRadiusAxis />
-                      <Radar name="Current Month" dataKey="A" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-                      <Radar name="Previous Month" dataKey="B" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} />
+                      <Radar
+                        name="Current Month"
+                        dataKey="A"
+                        stroke="#8884d8"
+                        fill="#8884d8"
+                        fillOpacity={0.6}
+                      />
+                      <Radar
+                        name="Previous Month"
+                        dataKey="B"
+                        stroke="#82ca9d"
+                        fill="#82ca9d"
+                        fillOpacity={0.6}
+                      />
                       <Legend />
                     </RadarChart>
                   </ResponsiveContainer>
@@ -629,7 +808,9 @@ export default function AdminDashboardPage() {
               </CardContent>
               <CardFooter>
                 <Button variant="outline" size="sm" className="ml-auto" asChild>
-                  <Link href="/admin/predictions/features">Predict Future Usage</Link>
+                  <Link href="/admin/predictions/features">
+                    Predict Future Usage
+                  </Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -643,7 +824,9 @@ export default function AdminDashboardPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle>Device Usage</CardTitle>
-                    <CardDescription>User access by device type</CardDescription>
+                    <CardDescription>
+                      User access by device type
+                    </CardDescription>
                   </div>
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                 </div>
@@ -657,13 +840,18 @@ export default function AdminDashboardPage() {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        label={({ name, percent }) =>
+                          `${name}: ${(percent * 100).toFixed(0)}%`
+                        }
                         outerRadius={80}
                         fill="#8884d8"
                         dataKey="value"
                       >
                         {deviceUsageData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
                         ))}
                       </Pie>
                       <RechartsTooltip />
@@ -686,7 +874,9 @@ export default function AdminDashboardPage() {
                       <Users className="h-5 w-5 text-muted-foreground" />
                       <div>
                         <p className="font-medium">User Activity Report</p>
-                        <p className="text-sm text-muted-foreground">Detailed user engagement metrics</p>
+                        <p className="text-sm text-muted-foreground">
+                          Detailed user engagement metrics
+                        </p>
                       </div>
                     </div>
                     <Button variant="outline" size="sm">
@@ -699,7 +889,9 @@ export default function AdminDashboardPage() {
                       <DollarSign className="h-5 w-5 text-muted-foreground" />
                       <div>
                         <p className="font-medium">Financial Report</p>
-                        <p className="text-sm text-muted-foreground">Revenue and subscription data</p>
+                        <p className="text-sm text-muted-foreground">
+                          Revenue and subscription data
+                        </p>
                       </div>
                     </div>
                     <Button variant="outline" size="sm">
@@ -712,7 +904,9 @@ export default function AdminDashboardPage() {
                       <Activity className="h-5 w-5 text-muted-foreground" />
                       <div>
                         <p className="font-medium">Content Performance</p>
-                        <p className="text-sm text-muted-foreground">Most viewed muscles and videos</p>
+                        <p className="text-sm text-muted-foreground">
+                          Most viewed muscles and videos
+                        </p>
                       </div>
                     </div>
                     <Button variant="outline" size="sm">
@@ -725,7 +919,9 @@ export default function AdminDashboardPage() {
                       <Calendar className="h-5 w-5 text-muted-foreground" />
                       <div>
                         <p className="font-medium">Monthly Summary</p>
-                        <p className="text-sm text-muted-foreground">Complete platform overview</p>
+                        <p className="text-sm text-muted-foreground">
+                          Complete platform overview
+                        </p>
                       </div>
                     </div>
                     <Button variant="outline" size="sm">
@@ -740,7 +936,9 @@ export default function AdminDashboardPage() {
           <Card>
             <CardHeader>
               <CardTitle>Schedule Reports</CardTitle>
-              <CardDescription>Set up automated report delivery</CardDescription>
+              <CardDescription>
+                Set up automated report delivery
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -758,25 +956,35 @@ export default function AdminDashboardPage() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Comments</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total Comments
+                </CardTitle>
                 <MessageSquare className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {isLoading ? "..." : dashboardData?.commentStats.total.toLocaleString()}
+                  {isLoading
+                    ? "..."
+                    : dashboardData?.commentStats.total.toLocaleString()}
                 </div>
-                <p className="text-xs text-muted-foreground">+15% from last month</p>
+                <p className="text-xs text-muted-foreground">
+                  +15% from last month
+                </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Flagged Comments</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Flagged Comments
+                </CardTitle>
                 <MessageSquare className="h-4 w-4 text-red-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {isLoading ? "..." : dashboardData?.commentStats.flagged.toLocaleString()}
+                  {isLoading
+                    ? "..."
+                    : dashboardData?.commentStats.flagged.toLocaleString()}
                 </div>
                 <p className="text-xs text-muted-foreground">Requires review</p>
               </CardContent>
@@ -784,14 +992,20 @@ export default function AdminDashboardPage() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Pending Approval</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Pending Approval
+                </CardTitle>
                 <MessageSquare className="h-4 w-4 text-amber-500" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {isLoading ? "..." : dashboardData?.commentStats.pending.toLocaleString()}
+                  {isLoading
+                    ? "..."
+                    : dashboardData?.commentStats.pending.toLocaleString()}
                 </div>
-                <p className="text-xs text-muted-foreground">Awaiting moderation</p>
+                <p className="text-xs text-muted-foreground">
+                  Awaiting moderation
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -801,7 +1015,9 @@ export default function AdminDashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle>Comment Trends</CardTitle>
-                  <CardDescription>Total and flagged comments over time</CardDescription>
+                  <CardDescription>
+                    Total and flagged comments over time
+                  </CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -814,7 +1030,12 @@ export default function AdminDashboardPage() {
                     <YAxis />
                     <RechartsTooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="comments" stroke="#8884d8" activeDot={{ r: 8 }} />
+                    <Line
+                      type="monotone"
+                      dataKey="comments"
+                      stroke="#8884d8"
+                      activeDot={{ r: 8 }}
+                    />
                     <Line type="monotone" dataKey="flagged" stroke="#ff7300" />
                   </LineChart>
                 </ResponsiveContainer>
@@ -830,7 +1051,9 @@ export default function AdminDashboardPage() {
           <Card>
             <CardHeader>
               <CardTitle>Comment Moderation</CardTitle>
-              <CardDescription>Review and manage flagged comments</CardDescription>
+              <CardDescription>
+                Review and manage flagged comments
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -859,7 +1082,8 @@ export default function AdminDashboardPage() {
                         </div>
                       </div>
                       <p className="mt-2">
-                        This content appears to violate community guidelines regarding medical advice.
+                        This content appears to violate community guidelines
+                        regarding medical advice.
                       </p>
                     </div>
                   </div>
@@ -890,8 +1114,8 @@ export default function AdminDashboardPage() {
                         </div>
                       </div>
                       <p className="mt-2">
-                        I've found this resource incredibly helpful for my studies. The 3D models are detailed and
-                        accurate.
+                        I've found this resource incredibly helpful for my
+                        studies. The 3D models are detailed and accurate.
                       </p>
                     </div>
                   </div>
@@ -910,14 +1134,19 @@ export default function AdminDashboardPage() {
           <Card>
             <CardHeader>
               <CardTitle>Developer Contact</CardTitle>
-              <CardDescription>Get in touch with the development team for technical issues</CardDescription>
+              <CardDescription>
+                Get in touch with the development team for technical issues
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="border rounded-lg p-6">
-                  <h3 className="text-lg font-medium mb-2">Technical Support</h3>
+                  <h3 className="text-lg font-medium mb-2">
+                    Technical Support
+                  </h3>
                   <p className="text-muted-foreground mb-4">
-                    Contact our development team for technical issues, bugs, or feature requests.
+                    Contact our development team for technical issues, bugs, or
+                    feature requests.
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
@@ -937,13 +1166,18 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="border rounded-lg p-6">
-                  <h3 className="text-lg font-medium mb-2">Emergency Support</h3>
+                  <h3 className="text-lg font-medium mb-2">
+                    Emergency Support
+                  </h3>
                   <p className="text-muted-foreground mb-4">
-                    For critical issues affecting system availability or data integrity.
+                    For critical issues affecting system availability or data
+                    integrity.
                   </p>
                   <div className="p-4 bg-red-50 text-red-800 rounded-md border border-red-200 mb-4">
                     <h4 className="font-medium">On-Call Support</h4>
-                    <p className="text-sm mt-1">Available 24/7 for critical production issues only.</p>
+                    <p className="text-sm mt-1">
+                      Available 24/7 for critical production issues only.
+                    </p>
                   </div>
                   <Button variant="destructive" className="w-full">
                     Emergency Contact
@@ -976,6 +1210,5 @@ export default function AdminDashboardPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
-

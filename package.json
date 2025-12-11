@@ -5,13 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:typeless": "cross-env NEXT_TYPESCRIPT_CHECK=false next build",
     "start": "next start",
     "lint": "next lint",
     "seed": "prisma db seed",
     "postinstall": "prisma generate"
-  },
-  "engines": {
-    "node": ">=18.18"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seeder/seed.ts"
@@ -92,6 +90,7 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.1.0",
     "postcss": "^8",
     "prettier": "^3.7.0",
     "prisma": "^6.5.0",

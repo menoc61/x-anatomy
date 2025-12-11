@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               ...user,
               subscription: {
                 ...user.subscription,
-                status: "inactive",
+                status: "inactive" as Subscription["status"],
               },
             }
             setUser(updatedUser)

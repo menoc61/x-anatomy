@@ -1,22 +1,37 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/hooks/use-toast"
-import { useAuth } from "@/contexts/auth-context"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Separator } from "@/components/ui/separator"
-import { ArrowLeft, User, Mail, Pencil, Save, X } from "lucide-react"
-import Link from "next/link"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/auth-context";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { ArrowLeft, User, Mail, Pencil, Save, X } from "lucide-react";
+import Link from "next/link";
 
 const profileFormSchema = z.object({
   name: z
@@ -31,31 +46,32 @@ const profileFormSchema = z.object({
     message: "Please enter a valid email address.",
   }),
   bio: z.string().max(160).optional(),
-})
+});
 
-type ProfileFormValues = z.infer<typeof profileFormSchema>
+type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 export default function ProfilePage() {
-  const { user, updateUser } = useAuth()
-  const { toast } = useToast()
-  const router = useRouter()
-  const [isEditing, setIsEditing] = useState(false)
+  const { user, updateUser } = useAuth();
+  const { toast } = useToast();
+  const router = useRouter();
+  const [isEditing, setIsEditing] = useState(false);
 
   // Default values for the form
   const defaultValues: Partial<ProfileFormValues> = {
     name: user?.name || "",
     email: user?.email || "",
     bio: user?.bio || "",
-  }
+  };
+
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues,
     mode: "onChange",
-  })
+  });
 
   function onSubmit(data: ProfileFormValues) {
-    if (!user) return
+    if (!user) return;
 
     // Update user data
     const updatedUser = {
@@ -64,20 +80,20 @@ export default function ProfilePage() {
       email: data.email,
       bio: data.bio,
       updatedAt: new Date().toISOString(),
-    }
+    };
 
-    updateUser(updatedUser)
-    setIsEditing(false)
+    updateUser(updatedUser);
+    setIsEditing(false);
 
     toast({
       title: "Profile updated",
       description: "Your profile has been updated successfully.",
-    })
+    });
   }
 
   if (!user) {
-    router.push("/login")
-    return null
+    router.push("/login");
+    return null;
   }
 
   return (
@@ -104,7 +120,9 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle>Profile</CardTitle>
-                  <CardDescription>Manage your profile information.</CardDescription>
+                  <CardDescription>
+                    Manage your profile information.
+                  </CardDescription>
                 </div>
                 <Button
                   variant={isEditing ? "destructive" : "outline"}
@@ -128,8 +146,13 @@ export default function ProfilePage() {
             <CardContent className="space-y-6">
               <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
                 <Avatar className="w-20 h-20">
-                  <AvatarImage src={`https://avatar.vercel.sh/${user.email}`} alt={user.name} />
-                  <AvatarFallback className="text-lg">{user.name.charAt(0).toUpperCase()}</AvatarFallback>
+                  <AvatarImage
+                    src={`https://avatar.vercel.sh/${user.email}`}
+                    alt={user.name}
+                  />
+                  <AvatarFallback className="text-lg">
+                    {user.name.charAt(0).toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="space-y-1">
                   <h3 className="text-xl font-medium">{user.name}</h3>
@@ -144,7 +167,10 @@ export default function ProfilePage() {
 
               {isEditing ? (
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-6"
+                  >
                     <FormField
                       control={form.control}
                       name="name"
@@ -191,7 +217,8 @@ export default function ProfilePage() {
                             />
                           </FormControl>
                           <FormDescription>
-                            You can <span>@mention</span> other users and organizations.
+                            You can <span>@mention</span> other users and
+                            organizations.
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -206,15 +233,21 @@ export default function ProfilePage() {
               ) : (
                 <div className="space-y-4">
                   <div>
-                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Name</h4>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">
+                      Name
+                    </h4>
                     <p>{user.name}</p>
                   </div>
                   <div>
-                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Email</h4>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">
+                      Email
+                    </h4>
                     <p>{user.email}</p>
                   </div>
                   <div>
-                    <h4 className="text-sm font-medium text-muted-foreground mb-1">Bio</h4>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-1">
+                      Bio
+                    </h4>
                     <p>{user.bio || "No bio provided."}</p>
                   </div>
                 </div>
@@ -225,14 +258,17 @@ export default function ProfilePage() {
           <Card>
             <CardHeader>
               <CardTitle>Subscription</CardTitle>
-              <CardDescription>Manage your subscription plan and billing.</CardDescription>
+              <CardDescription>
+                Manage your subscription plan and billing.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="font-medium">Current Plan</h4>
                   <p className="text-sm text-muted-foreground">
-                    {user.subscription.plan.charAt(0).toUpperCase() + user.subscription.plan.slice(1)}
+                    {user.subscription?.plan.charAt(0).toUpperCase() +
+                      user.subscription?.plan.slice(1)}
                   </p>
                 </div>
                 <Button variant="outline" asChild>
@@ -245,19 +281,33 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="text-muted-foreground">Status</p>
-                    <p className="font-medium capitalize">{user.subscription.status}</p>
+                    <p className="font-medium capitalize">
+                      {user.subscription.status}
+                    </p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Renewal</p>
-                    <p className="font-medium">{user.subscription.autoRenew ? "Auto-renews" : "Does not renew"}</p>
+                    <p className="font-medium">
+                      {user.subscription.autoRenew
+                        ? "Auto-renews"
+                        : "Does not renew"}
+                    </p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Start Date</p>
-                    <p className="font-medium">{new Date(user.subscription.startDate).toLocaleDateString()}</p>
+                    <p className="font-medium">
+                      {new Date(
+                        user.subscription.startDate
+                      ).toLocaleDateString()}
+                    </p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Expiry Date</p>
-                    <p className="font-medium">{new Date(user.subscription.expiresAt).toLocaleDateString()}</p>
+                    <p className="font-medium">
+                      {new Date(
+                        user.subscription.expiresAt
+                      ).toLocaleDateString()}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -269,12 +319,16 @@ export default function ProfilePage() {
           <Card>
             <CardHeader>
               <CardTitle>Appearance</CardTitle>
-              <CardDescription>Customize how the application looks on your device.</CardDescription>
+              <CardDescription>
+                Customize how the application looks on your device.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
                 <h4 className="font-medium">Theme</h4>
-                <p className="text-sm text-muted-foreground">Select your preferred theme for the application.</p>
+                <p className="text-sm text-muted-foreground">
+                  Select your preferred theme for the application.
+                </p>
                 <div className="grid grid-cols-3 gap-4 pt-2">
                   <Button variant="outline" className="justify-start">
                     Light
@@ -292,7 +346,9 @@ export default function ProfilePage() {
 
               <div className="space-y-2">
                 <h4 className="font-medium">Font Size</h4>
-                <p className="text-sm text-muted-foreground">Adjust the font size for better readability.</p>
+                <p className="text-sm text-muted-foreground">
+                  Adjust the font size for better readability.
+                </p>
                 <div className="grid grid-cols-4 gap-4 pt-2">
                   <Button variant="outline" className="justify-start">
                     Small
@@ -313,7 +369,9 @@ export default function ProfilePage() {
 
               <div className="space-y-2">
                 <h4 className="font-medium">Animation</h4>
-                <p className="text-sm text-muted-foreground">Control animation and motion effects.</p>
+                <p className="text-sm text-muted-foreground">
+                  Control animation and motion effects.
+                </p>
                 <div className="grid grid-cols-2 gap-4 pt-2">
                   <Button variant="default" className="justify-start">
                     Enabled
@@ -334,7 +392,9 @@ export default function ProfilePage() {
           <Card>
             <CardHeader>
               <CardTitle>Notifications</CardTitle>
-              <CardDescription>Configure how you receive notifications.</CardDescription>
+              <CardDescription>
+                Configure how you receive notifications.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
@@ -356,7 +416,8 @@ export default function ProfilePage() {
                     <div>
                       <p className="font-medium">Subscription Alerts</p>
                       <p className="text-sm text-muted-foreground">
-                        Get notified about your subscription status and renewals.
+                        Get notified about your subscription status and
+                        renewals.
                       </p>
                     </div>
                     <Button variant="outline">Enabled</Button>
@@ -367,7 +428,9 @@ export default function ProfilePage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium">Educational Content</p>
-                      <p className="text-sm text-muted-foreground">Receive educational materials and anatomy guides.</p>
+                      <p className="text-sm text-muted-foreground">
+                        Receive educational materials and anatomy guides.
+                      </p>
                     </div>
                     <Button variant="outline">Disabled</Button>
                   </div>
@@ -394,7 +457,9 @@ export default function ProfilePage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium">Feature Tips</p>
-                      <p className="text-sm text-muted-foreground">Receive tips about features you haven't used yet.</p>
+                      <p className="text-sm text-muted-foreground">
+                        Receive tips about features you haven't used yet.
+                      </p>
                     </div>
                     <Button variant="outline">Enabled</Button>
                   </div>
@@ -408,6 +473,5 @@ export default function ProfilePage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
-
