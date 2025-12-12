@@ -74,12 +74,13 @@ model Comment {
   updatedAt DateTime @updatedAt
   content   String
   authorId  String
-  postId    Int?
   approved  Boolean  @default(false)
-
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  muscleId  String?
+  muscle    Muscle?  @relation(fields: [muscleId], references: [id], onDelete: Cascade)
 
   @@index([authorId])
+  @@index([muscleId])
 }
 
 // Basic Subscription model placeholder for Stripe integration
@@ -96,4 +97,51 @@ model Subscription {
   updatedAt            DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Muscle {
+  id               String    @id @default(cuid())
+  name             String    @unique
+  shortDescription String?
+  description      String?   @db.Text
+  image            String?
+  origin           String?
+  insertion        String?
+  functions        String[]
+  movements        String[]
+  number           Int       @unique
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  videos           Video[]
+  comments         Comment[]
+
+  conditions MuscleConditionOnMuscle[]
+}
+
+model Video {
+  id          String   @id @default(cuid())
+  title       String
+  url         String
+  description String?
+  muscleId    String
+  muscle      Muscle   @relation(fields: [muscleId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@index([muscleId])
+}
+
+model MuscleCondition {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String
+  muscles     MuscleConditionOnMuscle[]
+}
+
+model MuscleConditionOnMuscle {
+  muscle          Muscle        @relation(fields: [muscleId], references: [id])
+  muscleId        String
+  muscleCondition MuscleCondition @relation(fields: [muscleConditionId], references: [id])
+  muscleConditionId String
+
+  @@id([muscleId, muscleConditionId])
 }
