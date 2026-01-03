@@ -1,3 +1,4 @@
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/menoc61/x-anatomy)
 # Anatomy Explorer
 
 An interactive web application designed for exploring the human muscular system in detail. Built with Next.js, TypeScript, and Tailwind CSS, this application offers a rich learning experience for students, professionals, and enthusiasts interested in human anatomy.
