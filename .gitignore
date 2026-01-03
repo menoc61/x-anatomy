@@ -26,3 +26,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# Database files
+prisma/dev.db
+
+# Log files
+dev.log

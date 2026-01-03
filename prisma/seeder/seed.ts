@@ -1,6 +1,7 @@
 import { PrismaClient, User } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import bcrypt from 'bcrypt';
+import { muscleData } from '../../lib/muscle-data';
 
 const prisma = new PrismaClient();
 const saltRounds = 10; 
@@ -95,19 +96,80 @@ async function main() {
 
   const allUsers = [...specificUsers, ...randomUsers];
 
-  // --- Create Dummy Comments ---
-  console.log('Creating dummy comments...');
+  // --- Create Muscles and Conditions ---
+  console.log('Creating muscles and their conditions...');
+  const createdMuscles = [];
+  for (const key in muscleData) {
+    const muscle = muscleData[key];
+    const { conditions, videos, ...muscleDetails } = muscle;
+
+    const newMuscle = await prisma.muscle.upsert({
+      where: { name: muscle.name },
+      update: {},
+      create: {
+        ...muscleDetails,
+        description: muscle.description,
+      },
+    });
+    createdMuscles.push(newMuscle);
+    console.log(`Created/found muscle: ${newMuscle.name}`);
+
+    for (const condition of conditions) {
+      const existingCondition = await prisma.muscleCondition.upsert({
+        where: { name: condition.name },
+        update: {},
+        create: {
+          name: condition.name,
+          description: condition.description,
+        },
+      });
+
+      await prisma.muscleConditionOnMuscle.upsert({
+        where: {
+          muscleId_muscleConditionId: {
+            muscleId: newMuscle.id,
+            muscleConditionId: existingCondition.id,
+          },
+        },
+        update: {},
+        create: {
+          muscleId: newMuscle.id,
+          muscleConditionId: existingCondition.id,
+        },
+      });
+      console.log(`Associated condition "${existingCondition.name}" with muscle "${newMuscle.name}"`);
+    }
+  }
+
+  // --- Create Dummy Videos and Associate with Muscles ---
+  console.log('Creating dummy videos and associating with muscles...');
+  for (const muscle of createdMuscles) {
+    for (let i = 0; i < 2; i++) {
+      await prisma.video.create({
+        data: {
+          title: faker.lorem.sentence(),
+          description: faker.lorem.paragraph(),
+          url: `https://www.youtube.com/watch?v=${faker.string.alphanumeric(11)}`,
+          muscleId: muscle.id,
+        },
+      });
+    }
+  }
+
+  // --- Create Dummy Comments and Associate with Muscles ---
+  console.log('Creating dummy comments and associating with muscles...');
   for (let i = 0; i < 20; i++) {
     const randomUser = faker.helpers.arrayElement(allUsers);
+    const randomMuscle = faker.helpers.arrayElement(createdMuscles);
     const comment = await prisma.comment.create({
       data: {
         content: faker.lorem.sentences(faker.number.int({ min: 1, max: 3 })),
         authorId: randomUser.id,
-        approved: faker.datatype.boolean(0.8), // 80% chance approved
-        // postId: null, // Link to posts if you add a Post model
+        approved: faker.datatype.boolean(0.8),
+        muscleId: randomMuscle.id,
       },
     });
-    console.log(`Created comment with id: ${comment.id} by user ${randomUser.id}`);
+    console.log(`Created comment id ${comment.id} for muscle "${randomMuscle.name}" by user ${randomUser.id}`);
   }
 
   // --- Create Dummy Subscriptions for some Random Users ---
