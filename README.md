@@ -86,29 +86,40 @@ Anatomy Explorer provides an immersive platform to learn about human muscles. Us
     ```
 
 ### Environment Variables
-1.  Create a `.env.local` file in the root directory.
-2.  Add necessary environment variables. Key variables likely include:
-    - `DATABASE_URL`: Connection string for your PostgreSQL database (e.g., `postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=public`)
-    - `NEXTAUTH_URL`: The base URL of your application (e.g., `http://localhost:3000`)
-    - `NEXTAUTH_SECRET`: A secret key for NextAuth.js (generate one using `openssl rand -base64 32`)
-    - `SKETCHFAB_API_TOKEN`: (If needed for specific API interactions beyond embedding)
-    - *(Add any other required variables based on `lib/auth.ts`, API clients, etc.)*
+1.  Copy `.env.example` to `.env.local`.
+    ```bash
+    cp .env.example .env.local
+    ```
+2.  For local-first development, keep the defaults from `.env.example` (PostgreSQL + Redis on localhost).
+3.  Set auth variables:
+    - `NEXTAUTH_URL`
+    - `NEXTAUTH_SECRET`
+4.  Optional:
+    - `SKETCHFAB_API_TOKEN`
 
-### Running the Development Server
-1.  Ensure your database is running.
-2.  Apply database migrations:
-    ```bash
-    pnpm prisma migrate dev
-    ```
-    *(You might need to seed the database if seed scripts exist)*
-    ```bash
-    # Example: pnpm prisma db seed 
-    ```
-3.  Start the development server:
-    ```bash
-    pnpm dev
-    ```
-4.  Open [http://localhost:3000](http://localhost:3000) in your browser.
+### Running the Development Server (Local First)
+1. Start local infrastructure (PostgreSQL + Redis):
+   ```bash
+   docker compose up -d
+   ```
+2. Apply Prisma schema to local PostgreSQL:
+   ```bash
+   pnpm prisma db push
+   ```
+3. (Optional) Seed local data:
+   ```bash
+   pnpm seed
+   ```
+4. Start the app:
+   ```bash
+   pnpm dev
+   ```
+5. Verify backend connectivity:
+   - API check: `GET /api/health/local`
+   - Frontend check: **Admin → Settings → Environment → Infrastructure** and click **Test Local PostgreSQL + Redis**.
+
+### Notes for Supabase Deployment
+If you deploy to Supabase later, set `DATABASE_URL` (pooler) and `DIRECT_URL` (direct connection) to your Supabase Postgres values and keep the same Prisma workflow.
 
 ## Key Functionality
 

@@ -6,9 +6,11 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  // Ensure DATABASE_URL is set in your .env file
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  // Supabase pooler connection string (port 6543)
+  url       = env("DATABASE_URL")
+  // Direct connection (port 5432) used by Prisma migrations
+  directUrl = env("DIRECT_URL")
 }
 
 // Required models for NextAuth.js Prisma Adapter
