@@ -69,6 +69,8 @@ Anatomy Explorer provides an immersive platform to learn about human muscles. Us
 
 ## Getting Started
 
+For a concise local runbook, see [LOCAL_DEVELOPMENT.md](LOCAL_DEVELOPMENT.md).
+
 ### Prerequisites
 - Node.js (Version specified in `.nvmrc` or `package.json`, e.g., v18+)
 - pnpm (Package manager)
@@ -117,6 +119,37 @@ Anatomy Explorer provides an immersive platform to learn about human muscles. Us
 5. Verify backend connectivity:
    - API check: `GET /api/health/local`
    - Frontend check: **Admin → Settings → Environment → Infrastructure** and click **Test Local PostgreSQL + Redis**.
+
+### One-Command Local Launch (includes seed data)
+Use the local launcher script to boot infrastructure, apply schema, seed demo data, and start the app:
+
+```bash
+pnpm local:launch
+```
+
+> Compatibility alias: `pnpm local:lunch`
+
+This script runs:
+1. `docker compose up -d`
+2. `pnpm prisma db push`
+3. `pnpm seed`
+4. `pnpm dev`
+
+### Seeded Demo Data
+The seed script now resets and recreates local data on each run so local environments stay consistent.
+
+Included demo accounts:
+- `admin@admin.com` / `admin`
+- `user@user.com` / `user`
+- `test@user.com` / `testuser`
+- 7 additional deterministic demo users (`demo1@local.dev` ... `demo7@local.dev`)
+
+The seed also creates:
+- full muscle catalog from `lib/muscle-data.ts`
+- muscle conditions + relationships
+- demo videos per muscle
+- demo comments
+- subscriptions for subscribed/dummy users
 
 ### Notes for Supabase Deployment
 If you deploy to Supabase later, set `DATABASE_URL` (pooler) and `DIRECT_URL` (direct connection) to your Supabase Postgres values and keep the same Prisma workflow.
