@@ -9,10 +9,28 @@ import { useEnvironmentStore } from "@/lib/store"
 import { useToast } from "@/hooks/use-toast"
 import { Download, Upload, RotateCcw } from "lucide-react"
 
+type LocalHealthResponse = {
+  ok: boolean
+  elapsedMs: number
+  postgres: {
+    ok: boolean
+    message: string
+    timestamp?: string
+  }
+  redis: {
+    ok: boolean
+    message: string
+    host: string
+    port: number
+  }
+}
+
 export default function EnvironmentSettingsPage() {
   const { exportConfigs, importConfigs, resetAllApiConfigs } = useEnvironmentStore()
   const { toast } = useToast()
   const [activeTab, setActiveTab] = useState("apis")
+  const [isTestingLocal, setIsTestingLocal] = useState(false)
+  const [localHealth, setLocalHealth] = useState<LocalHealthResponse | null>(null)
 
   const handleExport = () => {
     const configsJson = exportConfigs()
@@ -80,21 +98,44 @@ export default function EnvironmentSettingsPage() {
     }
   }
 
+  const testLocalInfrastructure = async () => {
+    setIsTestingLocal(true)
+
+    try {
+      const response = await fetch("/api/health/local", { cache: "no-store" })
+      const data = (await response.json()) as LocalHealthResponse
+      setLocalHealth(data)
+
+      toast({
+        title: data.ok ? "Local services connected" : "Local services check failed",
+        description: data.ok
+          ? "PostgreSQL and Redis are reachable from the app."
+          : "One or more services are unavailable. Review details in Infrastructure tab.",
+        variant: data.ok ? "default" : "destructive",
+      })
+    } catch (error) {
+      toast({
+        title: "Infrastructure check failed",
+        description: error instanceof Error ? error.message : "Unknown error",
+        variant: "destructive",
+      })
+    } finally {
+      setIsTestingLocal(false)
+    }
+  }
+
   // Mock test connection functions
   const testSketchfabConnection = async () => {
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500))
     return true
   }
 
   const testOpenAIConnection = async () => {
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500))
     return true
   }
 
   const testStripeConnection = async () => {
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500))
     return true
   }
@@ -120,11 +161,12 @@ export default function EnvironmentSettingsPage() {
       </div>
 
       <Tabs defaultValue="apis" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-4 w-full max-w-md">
+        <TabsList className="grid grid-cols-5 w-full max-w-xl">
           <TabsTrigger value="apis">APIs</TabsTrigger>
           <TabsTrigger value="content">Content</TabsTrigger>
           <TabsTrigger value="auth">Auth</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="infrastructure">Infrastructure</TabsTrigger>
         </TabsList>
 
         <TabsContent value="apis" className="space-y-6 mt-6">
@@ -224,8 +266,37 @@ export default function EnvironmentSettingsPage() {
             ]}
           />
         </TabsContent>
+
+        <TabsContent value="infrastructure" className="space-y-6 mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Local Infrastructure Check</CardTitle>
+              <CardDescription>Verify local PostgreSQL and Redis connectivity from the running app.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Button onClick={testLocalInfrastructure} disabled={isTestingLocal}>
+                {isTestingLocal ? "Testing..." : "Test Local PostgreSQL + Redis"}
+              </Button>
+
+              {localHealth && (
+                <div className="space-y-2 text-sm">
+                  <p className={localHealth.ok ? "text-green-600" : "text-red-600"}>
+                    Overall status: {localHealth.ok ? "Healthy" : "Unhealthy"}
+                  </p>
+                  <p>
+                    PostgreSQL: {localHealth.postgres.ok ? "Connected" : "Disconnected"} — {localHealth.postgres.message}
+                  </p>
+                  <p>
+                    Redis: {localHealth.redis.ok ? "Connected" : "Disconnected"} — {localHealth.redis.message} (
+                    {localHealth.redis.host}:{localHealth.redis.port})
+                  </p>
+                  <p>Response time: {localHealth.elapsedMs}ms</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   )
 }
-

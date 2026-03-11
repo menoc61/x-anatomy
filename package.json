@@ -7,7 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed": "prisma db seed"
+    "seed": "prisma db seed",
+    "infra:up": "docker compose up -d",
+    "infra:down": "docker compose down",
+    "db:push": "prisma db push",
+    "local:launch": "bash scripts/local-launch.sh",
+    "local:lunch": "pnpm local:launch"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seeder/seed.ts"
